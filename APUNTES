@@ -1,0 +1,122 @@
+npm init -y para hacer la primera instalación, esto creará el package.json
+
+Si creamos un index.js con un console.log('Hola Mundo'); y en terminal ponemos node index.js sacará en la termina Hola Mundo
+
+npm i nodemon -g para que se instale una libreria que refresca continuamente si hay cambios en los archivos de node, sin que tengamos que relanzar la app
+
+nodemon index.js
+control + C para cancelar nodemon
+
+Añadimos estos script en package.json para acortar y será npm run dev y npm start
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+
+npm start no necesita run porque por defecto npm start busca por defecto ese script, el resto si necesita run para buscarlo de manera explicita.
+
+const express = require('express'); //es como un import
+
+
+npm install dotenv para las variables de entorno
+require('dotenv').config(); //Recoge todo lo del .env y en consola sale { parsed: { PORT: '4001' } } o { parsed: { PORT: '4001', PRUEBA: 'ddjdjddj' } } si tienes mas cosas.
+y se usa con process, por ejemplo: process.env.PORT será el PORT que tenemos configurado en el archivo .env 
+
+--------- SEPARACIÓN DE RUTAS Y CONTROLLERS ---------
+Se hace  para hacer que el código sea más modular, mantenible y escalable. 
+En las rutas se guarda la información relacionada a las URLs y las acciones que deben realizarse en respuesta a esas URL. En los controllers la lógica específica de cada acción o endpoint.
+Asi también se puede reutilizar el controller en múltiples rutas si es necesario.
+Facilita también las pruebas unitarias.
+
+// req es lo que solicitamos
+// res la respuesta
+
+---------------------------------
+VALIDACIONES
+https://express-validator.github.io/docs
+npm i express-validator
+ check('name', 'El nombre es obligatorio').not().isEmpty() // El nombre es obligatorio y no puede estar vacío
+
+---------------------------------
+ STATUS
+ Si llega mal la info del frontend (email, password etc) se usa 400;
+ Si creamos información correctamente se usa 200;
+
+
+-------------------------------
+MIDDLEWARES
+Un middleware en el contexto de Express.js es una función que tiene acceso al objeto de solicitud (req), al objeto de respuesta (res) y a la función next en el ciclo de solicitud-respuesta de una aplicación Express. El middleware tiene la capacidad de realizar acciones en la solicitud, modificar la respuesta y, opcionalmente, pasar el control al siguiente middleware en la pila de middleware.
+
+Los middleware son fundamentales en Express.js ya que permiten realizar una variedad de tareas, como autenticación, manejo de errores, registro de solicitudes, entre otras, de una manera modular y reutilizable. Los middleware pueden ser utilizados para:
+
+Procesamiento de solicitudes: Pueden realizar tareas como analizar los datos de la solicitud, validar encabezados, cookies, parámetros de consulta, etc.
+
+Modificación de respuestas: Pueden agregar encabezados a la respuesta, establecer el código de estado, enviar datos al cliente, entre otras acciones.
+
+Control de flujo: Pueden decidir si dejar pasar la solicitud al siguiente middleware en la cadena o finalizar el flujo de la solicitud sin continuar con el siguiente middleware.
+
+Si solo es un middleware puede ser:
+router.get("/renew", validateJWT ,tokenRevalidate);
+Si es dos o mas necesitas []: 
+router.get("/renew", [validateJWT, otroMiddleware] ,tokenRevalidate);
+
+
+--------------------------
+MONGODB 
+Revisar videos
+
+------------------------
+JSON Web Tokens
+https://jwt.io/
+
+Se graba el id del usuario en el token.
+Archivo jwt.js -->
+      return new Promise((resolve, reject) => {
+        const payload = {uid, name}
+        jwt.sign(payload, process.env.JWT_SIGNING_KEY, {
+            expiresIn: '2h'
+        }, (err, token) => {
+            if(err) {
+                console.log(err)
+                reject('No se pudo generar el token')
+            }
+            resolve(token)
+        })
+
+    })
+    Los argumentos son:
+        - payload: del const payload
+        - clave del .env
+        - las opciones, en este caso que dure 2 horas
+        - callback que se dispara con un error en caso de que no se pueda firmar y tendría el token y en caso de que no haya errores devuelve el token y se resuelve la promesa.
+
+    En el .env se guarda la firma del token
+
+  Al validar el token:
+  const payload = jwt.verify(
+            token, 
+            process.env.JWT_SIGNING_KEY 
+        );
+  Esto por consola saca:
+  {
+  uid: '6601670e33f0bd9ccc4ff029',
+  name: 'Iratxe',
+  iat: 1711368888,
+  exp: 1711376088
+}
+
+
+
+---------------------------------------
+CORS
+https://www.npmjs.com/package/cors
+https://enable-cors.org/
+ Para elegir quien puede hacer peticiones.
+
+
+------------------------------------------------
+MONGODB
+eventToDelete.user.toString() si no ponemos toString() sería 
+  new ObjectId('6601670e33f0bd9ccc4ff029')
+y con toString() es 6601670e33f0bd9ccc4ff029
+asi se puede hacer una comparación.
